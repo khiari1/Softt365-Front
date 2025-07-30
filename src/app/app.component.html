@@ -1,20 +1,69 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{title}}!
-  </h1>
-  <img width="300" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://github.com/angular/angular-cli/wiki">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<div style="max-width:600px;margin:auto;">
+  <h1>Simulateur de crédit</h1>
+  <form (ngSubmit)="calculate()" #creditForm="ngForm">
+    <div>
+      <label>Montant d'achat :</label>
+      <input type="number" [(ngModel)]="input.montantAchat" name="montantAchat" required>
+    </div>
+    <div>
+      <label>Fonds propres :</label>
+      <input type="number" [(ngModel)]="input.fondsPropres" name="fondsPropres" required>
+    </div>
+    <div>
+      <label>Durée (mois) :</label>
+      <input type="number" [(ngModel)]="input.dureeMois" name="dureeMois" required>
+    </div>
+    <div>
+      <label>Taux annuel (%) :</label>
+      <input type="number" [(ngModel)]="input.tauxAnnuel" name="tauxAnnuel" step="0.01" required>
+    </div>
+    <div>
+      <label>
+        <input type="checkbox" [(ngModel)]="input.fraisAchatAuto" name="fraisAchatAuto">
+        Frais d'achat automatique
+      </label>
+      <input *ngIf="!input.fraisAchatAuto" type="number" [(ngModel)]="input.fraisAchat" name="fraisAchat" placeholder="Frais d'achat">
+    </div>
+    <div>
+      <label>
+        <input type="checkbox" [(ngModel)]="input.montantEmprunteAuto" name="montantEmprunteAuto">
+        Montant à emprunter automatique
+      </label>
+      <input *ngIf="!input.montantEmprunteAuto" type="number" [(ngModel)]="input.montantEmprunte" name="montantEmprunte" placeholder="Montant à emprunter">
+    </div>
+    <button type="submit" [disabled]="loading">Calculer</button>
+  </form>
 
+  <div *ngIf="error" style="color:red;">{{error}}</div>
+  <div *ngIf="result">
+    <h2>Résultat</h2>
+    <ul>
+      <li>Montant à emprunter brut : {{result.montantEmprunteBrut | number:'1.2-2'}} €</li>
+      <li>Frais d'achat : {{result.fraisAchat | number:'1.2-2'}} €</li>
+      <li>Frais d'hypothèque : {{result.fraisHypotheque | number:'1.2-2'}} €</li>
+      <li>Montant à emprunter net : {{result.montantEmprunteNet | number:'1.2-2'}} €</li>
+      <li>Mensualité : {{result.mensualite | number:'1.2-2'}} €</li>
+      <li>Taux mensuel : {{result.tauxMensuel | number:'1.3-3'}} %</li>
+      <li>Fonds propres : {{result.fondsPropres | number:'1.2-2'}} €</li>
+    </ul>
+    <h3>Tableau d'amortissement</h3>
+    <table border="1" cellspacing="0" cellpadding="4" style="font-size:12px;">
+      <tr>
+        <th>Période</th>
+        <th>Solde début</th>
+        <th>Mensualité</th>
+        <th>Intérêt</th>
+        <th>Capital remboursé</th>
+        <th>Solde fin</th>
+      </tr>
+      <tr *ngFor="let ligne of result.tableauAmortissement">
+        <td>{{ligne.periode}}</td>
+        <td>{{ligne.soldeDebut | number:'1.2-2'}}</td>
+        <td>{{ligne.mensualite | number:'1.2-2'}}</td>
+        <td>{{ligne.interet | number:'1.2-2'}}</td>
+        <td>{{ligne.capitalRembourse | number:'1.2-2'}}</td>
+        <td>{{ligne.soldeFin | number:'1.2-2'}}</td>
+      </tr>
+    </table>
+  </div>
+</div>
